@@ -1,0 +1,23 @@
+.nav-avatar {
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+}
+
+.nav-avatar img {
+    height: 40px;
+    border-radius: 5px;
+    width: auto;
+}
+
+.nav-notification {
+    padding-top: 7px !important;
+    padding-bottom: 7px !important;
+}
+
+.nav-notification i {
+    font-size: 1.8em !important;
+}
+
+.nav-notification .badge {
+    vertical-align: top !important;
+}

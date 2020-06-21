@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create an account{% endblock %}
+
+{% block masthead %}
+    {% import("sections/site/header/masthead.html.twig") as masthead %}
+    {{ masthead.masthead("Sign up", "Create an account to gain access to more features", asset("img/register-bg.jpg")) }}
+{% endblock %}
+
+{% block body %}
+    <h2>Create an account</h2>
+
+    {% for message in app.flashes('register-error') %}
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle" style="font-size: 1.5rem;"></i> Error!</h4>
+            <p>{{ message }}</p>
+        </div>
+    {% endfor %}
+
+    {{ form_start(registerForm) }}
+        <div class="control-group">
+            <div class="form-group floating-label-form-group controls">
+                {{ form_label(registerForm.username) }}
+                {{ form_widget(registerForm.username, {'attr': {'class': 'form-control'}}) }}
+                {% if registerForm.username.vars.errors|length > 0 %}
+                    {% for error in registerForm.username.vars.errors %}
+                        <p class="help-block text-danger">{{ error.message }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="form-group floating-label-form-group controls">
+                {{ form_label(registerForm.password.first) }}
+                {{ form_widget(registerForm.password.first, {'attr': {'class': 'form-control'}}) }}
+                {% if registerForm.password.first.vars.errors|length > 0 %}
+                    {% for error in registerForm.password.first.vars.errors %}
+                        <p class="help-block text-danger">{{ error.message }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="form-group floating-label-form-group controls">
+                {{ form_label(registerForm.password.second) }}
+                {{ form_widget(registerForm.password.second, {'attr': {'class': 'form-control'}}) }}
+                {% if registerForm.password.second.vars.errors|length > 0 %}
+                    {% for error in registerForm.password.second.vars.errors %}
+                        <p class="help-block text-danger">{{ error.message }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        <br>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Create Account</button>
+        </div>
+    {{ form_end(registerForm) }}
+{% endblock %}

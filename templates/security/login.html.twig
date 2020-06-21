@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sign in{% endblock %}
+
+{% block masthead %}
+    {% import("sections/site/header/masthead.html.twig") as masthead %}
+    {{ masthead.masthead("Sign in", "Sign in to your account", asset("img/login-bg.jpg")) }}
+{% endblock %}
+
+{% block body %}
+    <h2>Sign in</h2>
+
+    {% if error %}
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle" style="font-size: 1.5rem;"></i> Error!</h4>
+            <p>{{ error.messageKey|trans(error.messageData, 'security') }}</p>
+        </div>
+    {% endif %}
+
+    <form method="post">
+        <div class="control-group">
+            <div class="form-group floating-label-form-group controls">
+                <label>Username</label>
+                <input type="text" class="form-control" name="username" placeholder="Username" value="{{ last_username }}">
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="form-group floating-label-form-group controls">
+                <label>Password</label>
+                <input type="password" class="form-control" name="password" placeholder="Password">
+            </div>
+        </div>
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+        <br>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Sign In</button>
+        </div>
+    </form>
+{% endblock %}
