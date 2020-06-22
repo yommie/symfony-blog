@@ -8,15 +8,21 @@
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ path("home") }}">Home</a>
+                    <a class="nav-link" href="{{ path("home") }}"><i class="fas fa-home"></i> Home</a>
                 </li>
                 {% if app.user %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ path("createArticle") }}">Create Article</a>
+                        <a class="nav-link" href="{{ path("createArticle") }}"><i class="fas fa-plus"></i> Create Article</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link nav-notification" href="#"><i class="fas fa-bell"></i> <span class="badge badge-light">0</span></a>
+                        {% set notificationCount = notificationRepository.getNotificationCount(app.user) %}
+                        {% set badgeClass = "badge-light" %}
+
+                        {% if notificationCount > 0 %}
+                            {% set badgeClass = "badge-danger" %}
+                        {% endif %}
+                        <a class="nav-link nav-notification" href="#"><i class="fas fa-bell"></i> <span class="badge {{ badgeClass }}">{{ notificationCount }}</span></a>
                     </li>
 
                     <li class="nav-item dropdown">
@@ -28,8 +34,8 @@
 
                         <a id="nav-user-profile-dropdown" class="nav-link nav-avatar dropdown-toggle" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="{{ asset(avatar) }}"></a>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <a class="dropdown-item" href="#">Profile</a>
-                            <a class="dropdown-item" href="#">Subscriptions</a>
+                            <a class="dropdown-item" href="{{ path("viewAuthor", {"username": app.user.getUsername()}) }}">Profile</a>
+                            <a class="dropdown-item" href="{{ path("subscriptions") }}">Subscriptions</a>
                             <a class="dropdown-item" href="{{ path('app_logout') }}">Logout</a>
                         </div>
                     </li>

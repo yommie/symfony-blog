@@ -17,13 +17,27 @@
         </div>
     {% endfor %}
 
+    <div class="row">
+        <div class="col text-center">
+            {% if app.user %}
+                {% set filterOn = app.request.query.get("filter_subscriptions")|default("false") %}
+
+                {% if filterOn is same as("false") %}
+                    <a class="btn btn-info" href="{{ path("home", {"filter_subscriptions": "true"}) }}">Show Only Articles From your Subscriptions</a>
+                {% else %}
+                    <a class="btn btn-warning" href="{{ path("home", {"filter_subscriptions": "false"}) }}">Show all Articles</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
     {% for article in articles["paginator"] %}
         <div class="post-preview">
             <a href="{{ path("viewArticle", {"slug": article.getSlug()}) }}">
                 <h2 class="post-title">{{ article.getTitle() }}</h2>
                 <h3 class="post-subtitle">{{ article.getExcerpt() }}</h3>
             </a> 
-            <p class="post-meta">Posted by <a href="{{ path("home") }}">{{ article.getAuthor().getUsername() }}</a> on {{ article.getCreatedDate()|date("jS F, Y") }}</p>
+            <p class="post-meta">Posted by <a href="{{ path("viewAuthor", {"username": article.getAuthor().getUsername()}) }}">{{ article.getAuthor().getUsername() }}</a> on {{ article.getCreatedDate()|date("jS F, Y") }}</p>
         </div>
         <hr>
     {% else %}
@@ -36,12 +50,12 @@
     <div class="clearfix">
         {% if page > 1 %}
             {% set previousPage = page - 1 %}
-            <a class="btn btn-primary float-left" href="{{ path("home", {"page": previousPage}) }}">Newer Posts &larr;</a>
+            <a class="btn btn-primary float-left" href="{{ path("home", {"page": previousPage}|merge(params)) }}">Newer Posts &larr;</a>
         {% endif %}
 
         {% if page < pages and pages > 1 %}
             {% set nextPage = page + 1 %}
-            <a class="btn btn-primary float-right" href="{{ path("home", {"page": nextPage}) }}">Older Posts &rarr;</a>
+            <a class="btn btn-primary float-right" href="{{ path("home", {"page": nextPage}|merge(params)) }}">Older Posts &rarr;</a>
         {% endif %}
     </div>
 {% endblock %}

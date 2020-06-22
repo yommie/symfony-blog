@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\User;
 use App\Entity\Article;
+use App\Entity\Subscription;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -35,6 +36,7 @@ class ArticleRepository extends ServiceEntityRepository
      * @param User Author to fetch transactions from
      * @param bool Should fetch draft
      * @param bool Should fetch banned
+     * @param User Filter articles by user subscriptions
      *
      * @return Article[] Array of fetched articles
      */
@@ -43,8 +45,9 @@ class ArticleRepository extends ServiceEntityRepository
         int $pageNumber = 1,
         User $author = null,
         bool $shouldFetchDraft = false,
-        bool $shouldFetchBanned = false
-    ) {
+        bool $shouldFetchBanned = false,
+        User $user = null
+    ): array {
         $pageNumber -= 1;
 
         $query = $this->getEntityManager()
@@ -56,6 +59,28 @@ class ArticleRepository extends ServiceEntityRepository
             ->createQueryBuilder()
             ->select('COUNT(a)')
             ->from(Article::class, 'a');
+
+        if(null !== $user) {
+            $query
+                ->leftJoin(
+                    Subscription::class,
+                    's',
+                    \Doctrine\ORM\Query\Expr\Join::WITH,
+                    's.author = a.author'
+                )
+                ->andWhere("s.user = :user")
+                ->setParameter("user", $user);
+
+            $counterQuery
+                ->leftJoin(
+                    Subscription::class,
+                    's',
+                    \Doctrine\ORM\Query\Expr\Join::WITH,
+                    's.author = a.author'
+                )
+                ->andWhere("s.user = :user")
+                ->setParameter("user", $user);
+        }
 
         if(null !== $author) {
             $query
@@ -110,33 +135,4 @@ class ArticleRepository extends ServiceEntityRepository
             'totalMatched' => (int) $totalMatched
         );
     }
-
-    // /**
-    //  * @return Article[] Returns an array of Article objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('a.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Article
-    {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

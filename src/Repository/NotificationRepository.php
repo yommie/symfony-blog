@@ -2,9 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\User;
 use App\Entity\Notification;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @method Notification|null find($id, $lockMode = null, $lockVersion = null)
@@ -19,32 +20,29 @@ class NotificationRepository extends ServiceEntityRepository
         parent::__construct($registry, Notification::class);
     }
 
-    // /**
-    //  * @return Notification[] Returns an array of Notification objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('n')
-            ->andWhere('n.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('n.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Notification
-    {
-        return $this->createQueryBuilder('n')
-            ->andWhere('n.exampleField = :val')
-            ->setParameter('val', $value)
+
+
+
+    /**
+     * Get Notification Count
+     *
+     * @param User Notification Subject
+     *
+     * @return int Notification Count
+     */
+    public function getNotificationCount(User $subject): int {
+        return $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('COUNT(n)')
+            ->from(Notification::class, 'n')
+            ->where("n.subject = :subject")
+            ->andWhere("n.isSeen = :isSeen")
+            ->setParameters([
+                "subject" => $subject,
+                "isSeen" => false
+            ])
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getSingleScalarResult();
     }
-    */
 }

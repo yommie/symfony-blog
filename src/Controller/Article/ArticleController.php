@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ArticleController extends AbstractController
 {
     /**
-     * @Route("/articles/create", name="createArticle")
+     * @Route("/app/articles/create", name="createArticle")
      */
     public function createArticle(
         Request $request,

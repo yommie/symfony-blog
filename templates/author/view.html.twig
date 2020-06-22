@@ -1,0 +1,79 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ author.getUsername() }}{% endblock %}
+
+{% set mastTitle = author.getUsername() ~ "'s profile" %}
+{% set suffix = "" %}
+
+{% if author is same as(app.user) %}
+    {% set mastTitle = "Your profile" %}
+{% endif %}
+
+{% if articles["totalMatched"] is not same as(1) %}
+    {% set suffix = "s" %}
+{% endif %}
+
+{% block masthead %}
+    {% import("sections/site/header/masthead.html.twig") as masthead %}
+    {{ masthead.masthead(mastTitle, articles["totalMatched"] ~ " Article" ~ suffix ~ " created", asset("img/create-article-bg.jpg")) }}
+{% endblock %}
+
+{% block body %}
+    {% for message in app.flashes('author-error') %}
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle" style="font-size: 1.5rem;"></i> Error!</h4>
+            <p>{{ message }}</p>
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('author-success') %}
+        <div class="alert alert-success" role="alert">
+            <h4 class="alert-heading"><i class="fas fa-check-circle" style="font-size: 1.5rem;"></i> Success!</h4>
+            <p>{{ message }}</p>
+        </div>
+    {% endfor %}
+
+    <div class="row">
+        <div class="col text-center">
+            {% if app.user %}
+                {% if author is same as(app.user) %}
+                    <a class="btn btn-info" href="#">Settings</a>
+                {% else %}
+                    {% if subscriptionRepository.isSubscribed(app.user, author) is same as(false) %}
+                        <a class="btn btn-success" href="{{ path("subscribeAuthor", {"username": author.getUsername()}) }}">Subscribe to {{ author.getUsername() }}</a>
+                    {% else %}
+                        <a class="btn btn-warning" href="{{ path("unsubscribeAuthor", {"username": author.getUsername()}) }}">Unsubscribe from {{ author.getUsername() }}</a>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    {% for article in articles["paginator"] %}
+        <div class="post-preview">
+            <a href="{{ path("viewArticle", {"slug": article.getSlug()}) }}">
+                <h2 class="post-title">{{ article.getTitle() }}</h2>
+                <h3 class="post-subtitle">{{ article.getExcerpt() }}</h3>
+            </a> 
+            <p class="post-meta">Post date: {{ article.getCreatedDate()|date("jS F, Y") }}</p>
+        </div>
+        <hr>
+    {% else %}
+        <div class="alert alert-warning" role="alert">
+            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle" style="font-size: 1.5rem;"></i> Oops!</h4>
+            <p>No articles from this author yet!</p>
+        </div>
+    {% endfor %}
+
+    <div class="clearfix">
+        {% if page > 1 %}
+            {% set previousPage = page - 1 %}
+            <a class="btn btn-primary float-left" href="{{ path("home", {"page": previousPage}) }}">Newer Posts &larr;</a>
+        {% endif %}
+
+        {% if page < pages and pages > 1 %}
+            {% set nextPage = page + 1 %}
+            <a class="btn btn-primary float-right" href="{{ path("home", {"page": nextPage}) }}">Older Posts &rarr;</a>
+        {% endif %}
+    </div>
+{% endblock %}
