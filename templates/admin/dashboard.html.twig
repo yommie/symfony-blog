@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block body %}
+    {% for message in app.flashes('dashboard-error') %}
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle" style="font-size: 1.5rem;"></i> Error!</h4>
+            <p>{{ message }}</p>
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('dashboard-success') %}
+        <div class="alert alert-success" role="alert">
+            <h4 class="alert-heading"><i class="fas fa-check-circle" style="font-size: 1.5rem;"></i> Success!</h4>
+            <p>{{ message }}</p>
+        </div>
+    {% endfor %}
+
+    <div class="row mt-4 mb-4">
+        <div class="col-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">User Count</h5>
+                    <p class="card-text">{{ usersCount }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Banned Users</h5>
+                    <p class="card-text">{{ bannedUsers }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4 mb-4">
+        <div class="col-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Articles Count</h5>
+                    <p class="card-text">{{ articleCount }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Articles Users</h5>
+                    <p class="card-text">{{ bannedArticles }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

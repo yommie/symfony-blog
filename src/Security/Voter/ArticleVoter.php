@@ -16,9 +16,8 @@ class ArticleVoter extends Voter
     private const DELETE = "DELETE_POST";
     private const COMMENT = "COMMENT_ON_POST";
     private const BAN_POST = "CAN_BAN_POST";
-    private const BAN_USER = "CAN_BAN_USER";
 
-    private const SUPPORTED = [self::CREATE, self::EDIT, self::DELETE, self::COMMENT, self::BAN_POST, self::BAN_USER];
+    private const SUPPORTED = [self::CREATE, self::EDIT, self::DELETE, self::COMMENT, self::BAN_POST];
 
     private $security;
 
@@ -51,8 +50,6 @@ class ArticleVoter extends Voter
                 return $this->canComment($subject, $user);
             case self::BAN_POST:
                 return $this->canBanArticle($user);
-            case self::BAN_USER:
-                return $this->canBanUser($user);
         }
 
         return false;
@@ -87,14 +84,6 @@ class ArticleVoter extends Voter
     }
 
     private function canBanArticle(User $user) {
-        if(!$this->security->isGranted("ROLE_ADMIN")) {
-            return false;
-        }
-
-        return $this->security->isGranted("ROLE_SUPER_ADMIN") || in_array(self::BAN_POST, $user->getPermissions());
-    }
-
-    private function canBanUser(User $user) {
         if(!$this->security->isGranted("ROLE_ADMIN")) {
             return false;
         }

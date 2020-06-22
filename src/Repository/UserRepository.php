@@ -89,6 +89,34 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         );
     }
 
+
+
+
+
+    /**
+     * Get User Count
+     * 
+     * @param bool Get Banned
+     * 
+     * @return int User Count
+     */
+    public function getUserCount(
+        bool $getBanned = false
+    ): int {
+        $counterQuery = $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('COUNT(u)')
+            ->from(User::class, 'u');
+
+        if($getBanned) {
+            $counterQuery
+                ->andWhere("u.isBanned = :banned")
+                ->setParameter("banned", true);
+        }
+
+        return (int) $counterQuery->getQuery()->getSingleScalarResult();
+    }
+
     // /**
     //  * @return User[] Returns an array of User objects
     //  */

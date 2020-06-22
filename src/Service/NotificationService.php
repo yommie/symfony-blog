@@ -13,8 +13,20 @@ class NotificationService {
     public const USER_SUBSCRIBED_TO_AUTHOR = "JHHHZ1V4";
     public const AUTHOR_CREATED_NEW_ARTICLE = "zn3GFsbi";
     public const USER_COMMENTED_ON_POST = "TxYc4xU2";
+    public const UPGRADED_TO_ADMIN = "FxAJ11gT";
+    public const REMOVED_AS_ADMIN = "iObaBbhP";
+    public const USER_BANNED = "wSgkTtfw";
+    public const USER_UNBANNED = "KrPO4rmT";
 
-    private const NOTIFICATION_TYPES = [self::USER_SUBSCRIBED_TO_AUTHOR, self::AUTHOR_CREATED_NEW_ARTICLE, self::USER_COMMENTED_ON_POST];
+    private const NOTIFICATION_TYPES = [
+        self::USER_SUBSCRIBED_TO_AUTHOR,
+        self::AUTHOR_CREATED_NEW_ARTICLE,
+        self::USER_COMMENTED_ON_POST,
+        self::UPGRADED_TO_ADMIN,
+        self::REMOVED_AS_ADMIN,
+        self::USER_BANNED,
+        self::USER_UNBANNED
+    ];
 
     /**
      * Entity Manager
@@ -116,6 +128,30 @@ class NotificationService {
             case self::USER_COMMENTED_ON_POST:
                 $formattedNotification["content"] = '<h2 class="post-title">' . $notification->getActor()->getUsername() . ' commented on your article "' . $notification->getDescription() . '"</h2>';
                 $formattedNotification["link"] = $router->generate("viewArticle", ["slug" => $notification->getObjectId()]);
+                break;
+            
+            case self::UPGRADED_TO_ADMIN:
+                $formattedNotification["content"] = '<h2 class="post-title">Account upgrade</h2>';
+                $formattedNotification["content"] .= '<h3 class="post-subtitle">You have been upgraded to an admin</h3>';
+                $formattedNotification["link"] = $router->generate("adminDashboard");
+                break;
+            
+            case self::REMOVED_AS_ADMIN:
+                $formattedNotification["content"] = '<h2 class="post-title">Account downgrade</h2>';
+                $formattedNotification["content"] .= '<h3 class="post-subtitle">You have been removed as an admin</h3>';
+                $formattedNotification["link"] = "#";
+                break;
+            
+            case self::USER_BANNED:
+                $formattedNotification["content"] = '<h2 class="post-title">Account ban</h2>';
+                $formattedNotification["content"] .= '<h3 class="post-subtitle">You have been banned</h3>';
+                $formattedNotification["link"] = "#";
+                break;
+            
+            case self::USER_UNBANNED:
+                $formattedNotification["content"] = '<h2 class="post-title">Account unban</h2>';
+                $formattedNotification["content"] .= '<h3 class="post-subtitle">You have been unbanned</h3>';
+                $formattedNotification["link"] = "#";
                 break;
         }
 

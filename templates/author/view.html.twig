@@ -40,9 +40,29 @@
                     <a class="btn btn-info" href="#">Settings</a>
                 {% else %}
                     {% if subscriptionRepository.isSubscribed(app.user, author) is same as(false) %}
-                        <a class="btn btn-success" href="{{ path("subscribeAuthor", {"username": author.getUsername()}) }}">Subscribe to {{ author.getUsername() }}</a>
+                        <a class="btn btn-success" href="{{ path("subscribeAuthor", {"username": author.getUsername()}) }}">Subscribe</a>
                     {% else %}
-                        <a class="btn btn-warning" href="{{ path("unsubscribeAuthor", {"username": author.getUsername()}) }}">Unsubscribe from {{ author.getUsername() }}</a>
+                        <a class="btn btn-warning" href="{{ path("unsubscribeAuthor", {"username": author.getUsername()}) }}">Unsubscribe</a>
+                    {% endif %}
+
+                    {% if is_granted("ROLE_SUPER_ADMIN") %}
+                        {% if author.isGranted("ROLE_ADMIN") %}
+                            <a class="btn btn-danger" href="{{ path("adminRemoveAdmin", {"username": author.getUsername()}) }}">Remove as Admin</a>
+                        {% else %}
+                            <a class="btn btn-dark" href="{{ path("adminMakeAdmin", {"username": author.getUsername()}) }}">Make Admin</a>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if is_granted("CAN_BAN_USER", app.user) %}
+                        {% if author.getIsBanned() %}
+                            <a class="btn btn-danger" href="{{ path("adminUnbanUser", {"username": author.getUsername()}) }}">Unban</a>
+                        {% else %}
+                            <a class="btn btn-light" href="{{ path("adminBanUser", {"username": author.getUsername()}) }}">Ban</a>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if is_granted("ROLE_SUPER_ADMIN") %}
+                        <a class="btn btn-info" href="{{ path("adminPermissions", {"username": author.getUsername()}) }}">Permissions</a>
                     {% endif %}
                 {% endif %}
             {% endif %}
@@ -59,7 +79,7 @@
         </div>
         <hr>
     {% else %}
-        <div class="alert alert-warning" role="alert">
+        <div class="alert alert-warning mt-4" role="alert">
             <h4 class="alert-heading"><i class="fas fa-exclamation-triangle" style="font-size: 1.5rem;"></i> Oops!</h4>
             <p>No articles from this author yet!</p>
         </div>

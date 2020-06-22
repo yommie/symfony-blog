@@ -135,4 +135,32 @@ class ArticleRepository extends ServiceEntityRepository
             'totalMatched' => (int) $totalMatched
         );
     }
+
+
+
+
+
+    /**
+     * Get Article Count
+     * 
+     * @param bool Get Banned
+     * 
+     * @return int Article Count
+     */
+    public function getArticleCount(
+        bool $getBanned = false
+    ): int {
+        $counterQuery = $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('COUNT(a)')
+            ->from(Article::class, 'a');
+
+        if($getBanned) {
+            $counterQuery
+                ->andWhere("a.isBanned = :banned")
+                ->setParameter("banned", true);
+        }
+
+        return (int) $counterQuery->getQuery()->getSingleScalarResult();
+    }
 }

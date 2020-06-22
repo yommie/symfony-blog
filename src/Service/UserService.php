@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\Security;
 
 class UserService {
 
@@ -135,5 +136,83 @@ class UserService {
         $user->setLastSeen(new \DateTime);
 
         $this->entityManager->flush();
+    }
+
+
+
+
+
+    /**
+     * Make User Admin
+     * 
+     * @param Admin Admin
+     * @param User User
+     * 
+     * @throws \Exception
+     * 
+     * @return bool
+     */
+    public function makeUserAdmin(
+        User $admin,
+        User $user
+    ): bool {
+        if(!$admin->isGranted("ROLE_SUPER_ADMIN")) {
+            throw new \Exception("This action is for super admins only");
+        }
+
+        if($user->isGranted("ROLE_ADMIN")) {
+            throw new \Exception("User is already an admin");
+        }
+
+        $user->setRoles(array_merge($user->getRoles(), ["ROLE_ADMIN"]));
+        $this->entityManager->flush();
+
+        $notificationService = new NotificationService($this->entityManager);
+        try {
+            $notificationService->createNotification($notificationService::UPGRADED_TO_ADMIN, $admin, $user);
+        } catch(\Exception $e) {}
+
+        return true;
+    }
+
+
+
+
+
+    /**
+     * Remove User As Admin
+     * 
+     * @param Admin Admin
+     * @param User User
+     * 
+     * @throws \Exception
+     * 
+     * @return bool
+     */
+    public function removeUserAsAdmin(
+        User $admin,
+        User $user
+    ): bool {
+        if(!$admin->isGranted("ROLE_SUPER_ADMIN")) {
+            throw new \Exception("This action is for super admins only");
+        }
+
+        if(!$user->isGranted("ROLE_ADMIN")) {
+            throw new \Exception("User is not an admin");
+        }
+
+        $roles = $user->getRoles();
+        $adminKey = array_search("ROLE_ADMIN", $roles);
+        unset($roles[$adminKey]);
+
+        $user->setRoles($roles);
+        $this->entityManager->flush();
+
+        $notificationService = new NotificationService($this->entityManager);
+        try {
+            $notificationService->createNotification($notificationService::REMOVED_AS_ADMIN, $admin, $user);
+        } catch(\Exception $e) {}
+
+        return true;
     }
 }
