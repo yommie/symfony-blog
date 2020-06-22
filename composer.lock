@@ -4,8 +4,63 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f8f9e9e6997f9c08a717b9a36f1cf1b4",
+    "content-hash": "8b9c6cf7c4cfc8e5694ba7655e73ef64",
     "packages": [
+        {
+            "name": "deanblackborough/php-quill-renderer",
+            "version": "v3.18.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/deanblackborough/php-quill-renderer.git",
+                "reference": "11d3c7c0105a09ca007fc51925373ef5da168a9d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/deanblackborough/php-quill-renderer/zipball/11d3c7c0105a09ca007fc51925373ef5da168a9d",
+                "reference": "11d3c7c0105a09ca007fc51925373ef5da168a9d",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^7.1"
+            },
+            "require-dev": {
+                "php-coveralls/php-coveralls": "^2",
+                "phpunit/phpunit": "^7"
+            },
+            "suggest": {
+                "php": "^7.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "DBlackborough\\Quill\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dean Blackborough",
+                    "email": "dean@g3d-development.com"
+                }
+            ],
+            "description": "Render quill insert deltas to HTML, Markdown and GitHub flavoured Markdown",
+            "homepage": "http://www.transmute-coffee.com/php-quill-renderer.php",
+            "keywords": [
+                "delta",
+                "html",
+                "markdown",
+                "parse",
+                "php",
+                "quill",
+                "quilljs",
+                "renderer"
+            ],
+            "time": "2019-12-10T22:44:21+00:00"
+        },
         {
             "name": "doctrine/annotations",
             "version": "1.10.3",
@@ -1886,6 +1941,56 @@
                 "controllers"
             ],
             "time": "2020-06-15T20:28:02+00:00"
+        },
+        {
+            "name": "soundasleep/html2text",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/soundasleep/html2text.git",
+                "reference": "3243a7107878a61685d2eccf99918d6479e039fc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/soundasleep/html2text/zipball/3243a7107878a61685d2eccf99918d6479e039fc",
+                "reference": "3243a7107878a61685d2eccf99918d6479e039fc",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-libxml": "*",
+                "php": ">=7.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~7.0",
+                "soundasleep/component-tests": "~0.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Soundasleep\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jevon Wright",
+                    "homepage": "https://jevon.org",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A PHP script to convert HTML into a plain text format",
+            "homepage": "https://github.com/soundasleep/html2text",
+            "keywords": [
+                "email",
+                "html",
+                "php",
+                "text"
+            ],
+            "time": "2019-02-15T01:44:54+00:00"
         },
         {
             "name": "symfony/asset",

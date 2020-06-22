@@ -21,3 +21,9 @@
 .nav-notification .badge {
     vertical-align: top !important;
 }
+
+header.masthead .page-heading,
+header.masthead .post-heading,
+header.masthead .site-heading {
+    padding: 80px 0;
+}

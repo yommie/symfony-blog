@@ -31,8 +31,12 @@ class SiteAuthenticator extends AbstractFormLoginAuthenticator implements Passwo
     private $csrfTokenManager;
     private $passwordEncoder;
 
-    public function __construct(EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordEncoderInterface $passwordEncoder)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        UrlGeneratorInterface $urlGenerator,
+        CsrfTokenManagerInterface $csrfTokenManager,
+        UserPasswordEncoderInterface $passwordEncoder
+    ) {
         $this->entityManager = $entityManager;
         $this->urlGenerator = $urlGenerator;
         $this->csrfTokenManager = $csrfTokenManager;
@@ -74,7 +78,9 @@ class SiteAuthenticator extends AbstractFormLoginAuthenticator implements Passwo
             throw new CustomUserMessageAuthenticationException('Username could not be found.');
         }
 
-        if ($user->getIsBanned()) {
+        // TODO: Using security to check user roles would fail here as user isnt logged in. Would look for an elegant way to handle this later
+        // as there's currently no time :)
+        if ($user->getIsBanned() && !in_array("ROLE_SUPER_ADMIN", $user->getRoles())) {
             throw new CustomUserMessageAuthenticationException("Sorry, this account has been banned by the admin");
         }
 

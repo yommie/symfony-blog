@@ -1,12 +1,23 @@
-{% macro masthead(title, subHeading, image) %}
+{% macro masthead(title, subHeading = null, image, meta = null) %}
+    {% set headingType = "site-heading" %}
+
+    {% if meta is not same as(null) %}
+        {% set headingType = "post-heading" %}
+    {% endif %}
+
     <header class="masthead" style="background-image: url('{{ image }}')">
         <div class="overlay"></div>
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 col-md-10 mx-auto">
-                    <div class="site-heading">
+                    <div class="{{ headingType }}">
                         <h1>{{ title }}</h1>
-                        <span class="subheading">{{ subHeading }}</span>
+                        {% if subHeading is not same as(null) %}
+                            <span class="subheading">{{ subHeading }}</span>
+                        {% endif %}
+                        {% if meta is not same as(null) %}
+                            <span class="meta">{{ meta|raw }}</span>
+                        {% endif %}
                     </div>
                 </div>
             </div>

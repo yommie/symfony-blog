@@ -10,6 +10,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class RegisterType extends AbstractType
 {
@@ -34,6 +35,10 @@ class RegisterType extends AbstractType
                         'max' => 10,
                         'minMessage' => 'Username must be {{ limit }} or more characters long',
                         'maxMessage' => 'Username cannot be more than {{ limit }} character long'
+                    ]),
+                    new Regex([
+                        "pattern" => "/^[a-zA-Z0-9]*$/",
+                        "message" => "Username can only contain alphanumeric characters"
                     ])
                 ]
             ])

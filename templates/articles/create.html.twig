@@ -1,0 +1,143 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create article{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.2/skins/square/blue.css" integrity="sha256-RXWCsVDAOYwIrt1dupoFaLu8gwi9lEC2bIc+g1MDvMY=" crossorigin="anonymous" />
+    <link href="//cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+    <style>
+        .ql-editor{
+            min-height: 200px;
+        }
+    </style>
+{% endblock %}
+
+{% block masthead %}
+    {% import("sections/site/header/masthead.html.twig") as masthead %}
+    {{ masthead.masthead("Create Article", "Create an article", asset("img/create-article-bg.jpg")) }}
+{% endblock %}
+
+{% block body %}
+    <h2>Create Article</h2>
+
+    {% for message in app.flashes('create-article-error') %}
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle" style="font-size: 1.5rem;"></i> Error!</h4>
+            <p>{{ message }}</p>
+        </div>
+    {% endfor %}
+
+    {% if createForm.vars.errors|length > 0 %}
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle" style="font-size: 1.5rem;"></i> Content Error!</h4>
+            {% for error in createForm.vars.errors %}
+                <p>{{ error.message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {{ form_start(createForm, {'attr': {'id': 'createArticleForm'}}) }}
+        <div class="control-group">
+            <div class="form-group floating-label-form-group controls">
+                {{ form_label(createForm.title) }}
+                {{ form_widget(createForm.title, {'attr': {'class': 'form-control'}}) }}
+                {% if createForm.title.vars.errors|length > 0 %}
+                    {% for error in createForm.title.vars.errors %}
+                        <p class="help-block text-danger">{{ error.message }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="form-group pt-4 pb-2">
+                {{ form_label(createForm.featureImage, "Feature Image", {"label_attr": {"class": "text-muted"}}) }}
+                {{ form_widget(createForm.featureImage) }}
+                {% if createForm.featureImage.vars.errors|length > 0 %}
+                    {% for error in createForm.featureImage.vars.errors %}
+                        <p class="help-block text-danger">{{ error.message }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        <div id="contentEditor"></div>
+        <div class="control-group">
+            <div class="form-group pt-4 pb-2">
+                {{ form_label(createForm.isCommentsAllowed, "Allow Comments?", {"label_attr": {"class": "text-muted"}}) }}
+                {{ form_widget(createForm.isCommentsAllowed, {'attr': {'class': 'iCheck'}}) }}
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="form-group pb-2">
+                {{ form_label(createForm.shouldPublish, "Should Publish?", {"label_attr": {"class": "text-muted"}}) }}
+                {{ form_widget(createForm.shouldPublish, {'attr': {'class': 'iCheck'}}) }}
+            </div>
+        </div>
+        <br>
+        {{ form_widget(createForm.content) }}
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Create Article</button>
+        </div>
+    {{ form_end(createForm) }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.2/icheck.min.js" integrity="sha256-8HGN1EdmKWVH4hU3Zr3FbTHoqsUcfteLZJnVmqD/rC8=" crossorigin="anonymous"></script>
+    <script src="//cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+    <script>
+        $('.iCheck').iCheck({
+            checkboxClass: 'icheckbox_square-blue'
+        });
+
+        var quillOptions = {
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    ['link', 'image'],
+                    ['blockquote'],
+
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'script': 'sub'}, { 'script': 'super' }],
+                    [{ 'indent': '-1'}, { 'indent': '+1' }],
+                    [{ 'direction': 'rtl' }],
+
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'font': [] }],
+                    [{ 'align': [] }],
+
+                    ['clean']  
+                ]
+            },
+            theme: "snow"
+        }
+
+        var quill = new Quill('#contentEditor', quillOptions);
+
+        var content = $("#create_article_content").val();
+        if(content !== "") {
+            quill.setContents(JSON.parse(content));
+        }
+
+        var createArticleForm = document.getElementById("createArticleForm");
+
+        createArticleForm.addEventListener("submit", function(event) {
+            if(!isQuillEmpty(quill)) {
+                $("#create_article_content").val(JSON.stringify(quill.getContents()));
+            }
+        });
+
+        function isQuillEmpty(quill) {
+            if((quill.getContents()['ops'] || []).length !== 1) {
+                return false;
+            }
+
+            return quill.getText().trim().length === 0;
+        }
+    </script>
+{% endblock %}
