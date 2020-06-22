@@ -12,6 +12,28 @@ use Symfony\Component\Routing\Annotation\Route;
 class AuthorController extends AbstractController
 {
     /**
+     * @Route("/authors/{page}", name="authors", requirements={"page"="\d+"})
+     */
+    public function subscriptions(
+        int $page = 1,
+        UserRepository $userRepository
+    ): Response {
+        $recordsPerPage = $this->getParameter("records_per_page");
+        $users = $userRepository->fetchUsers($recordsPerPage, $page);
+        $pages = ceil($users["totalMatched"] / $recordsPerPage);
+
+        return $this->render('author/authors.html.twig', [
+            "authors" => $users,
+            "page" => $page,
+            "pages" => $pages
+        ]);
+    }
+
+
+
+
+
+    /**
      * @Route("/author/{username}/{page}", name="viewAuthor", requirements={"page"="\d+"})
      */
     public function viewAuthor(

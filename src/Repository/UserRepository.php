@@ -3,11 +3,12 @@
 namespace App\Repository;
 
 use App\Entity\User;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
-use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 
 /**
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
@@ -34,6 +35,58 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $user->setPassword($newEncodedPassword);
         $this->_em->persist($user);
         $this->_em->flush();
+    }
+
+
+
+
+
+    /**
+     * Fetch Users
+     *
+     * @param int Records per page
+     * @param int Page number
+     *
+     * @return User[] Array of fetched users
+     */
+    public function fetchUsers(
+        int $recordsPerPage,
+        int $pageNumber = 1
+    ): array {
+        $pageNumber -= 1;
+
+        $query = $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('u')
+            ->from(User::class, 'u');
+
+        $counterQuery = $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('COUNT(u)')
+            ->from(User::class, 'u');
+        
+        $query->addOrderBy('u.username', "ASC");
+
+        if(null !== $pageNumber && is_int($pageNumber)) {
+            $recordsPerPage = (null === $recordsPerPage || !is_integer($recordsPerPage)) ? false : $recordsPerPage;
+
+            $query->setFirstResult($recordsPerPage * $pageNumber);
+
+            if($recordsPerPage) {
+                $query->setMaxResults($recordsPerPage);
+            }
+        }
+
+        $finishedQuery = $query->getQuery();
+
+        $paginator = new Paginator($finishedQuery);
+
+        $totalMatched = $counterQuery->getQuery()->getSingleScalarResult();
+
+        return array(
+            'paginator' => $paginator,
+            'totalMatched' => (int) $totalMatched
+        );
     }
 
     // /**
