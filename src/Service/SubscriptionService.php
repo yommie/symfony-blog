@@ -76,12 +76,11 @@ class SubscriptionService {
         $this->entityManager->persist($subscription);
         $this->entityManager->flush();
 
+        $notificationService = new NotificationService($this->entityManager);
+
         try {
-            $notificationService = new NotificationService($this->entityManager, $this->authorizationChecker);
             $notificationService->createNotification($notificationService::USER_SUBSCRIBED_TO_AUTHOR, $user, $author);
-        } catch(\Exception $e) {
-            //
-        }
+        } catch(\Exception $e) {}
 
         return $subscription;
     }

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\Article;
+use App\Entity\ArticleComment;
+use App\Entity\Subscription;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -83,7 +85,7 @@ class ArticleService {
             throw new \Exception("Sorry, you do not have the permission to create articles");
         }
 
-        // TODO: Check for Banned Words
+        // TODO: Check for Banned Words [Create Content Guard Service for this]
 
         if($featureImage->getSize() > self::MAX_FEATURE_IMAGE_FILE_SIZE) {
             throw new FileException(sprintf(
@@ -125,7 +127,17 @@ class ArticleService {
         $this->entityManager->persist($article);
         $this->entityManager->flush();
 
-        // TODO: Notify Subcribed members
+        $subscribedMembers = $this->entityManager->getRepository(Subscription::class)->findBy([
+            "author" => $user
+        ]);
+
+        $notificationService = new NotificationService($this->entityManager);
+
+        foreach($subscribedMembers as $subscribedMember) {
+            try {
+                $notificationService->createNotification($notificationService::AUTHOR_CREATED_NEW_ARTICLE, $user, $subscribedMember->getUser(), $article->getSlug(), $article->getTitle());
+            } catch(\Exception $e) {}
+        }
 
         return $article;
     }
@@ -177,5 +189,48 @@ class ArticleService {
         $text = str_replace(['\r', '\n', '\t'], " ", \Soundasleep\Html2Text::convert($contentHtml));
 
         return substr($text, 0, 80) . " ...";
+    }
+
+
+
+
+
+    /**
+     * Create Article Comment
+     * 
+     * @param Article Article
+     * @param User Comment Author
+     * @param string Comment
+     * 
+     * @throws \Exception
+     * 
+     * @return ArticleComment Created Article Comment
+     */
+    public function createArticleComment(
+        Article $article,
+        User $user,
+        string $content
+    ): ArticleComment {
+        if(!$this->authorizationChecker->isGranted("COMMENT_ON_POST", $article)) {
+            throw new \Exception("Sorry, you do not have the permission to create articles");
+        }
+
+        $articleComment = new ArticleComment();
+        $articleComment->setArticle($article);
+        $articleComment->setUser($user);
+        $articleComment->setComment($content);
+        $articleComment->setCreatedDate(new \DateTime());
+
+        $this->entityManager->persist($articleComment);
+        $this->entityManager->flush();
+        
+        if($user !== $article->getAuthor()) {
+            $notificationService = new NotificationService($this->entityManager);
+            try {
+                $notificationService->createNotification($notificationService::USER_COMMENTED_ON_POST, $user, $article->getAuthor(), $article->getSlug(), $article->getTitle());
+            } catch(\Exception $e) {}
+        }
+
+        return $articleComment;
     }
 }

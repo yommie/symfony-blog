@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block masthead %}
+    {% import("sections/site/header/masthead.html.twig") as masthead %}
+    {{ masthead.masthead("Your notifications", notificationCount ~ " unread", asset("img/create-article-bg.jpg")) }}
+{% endblock %}
+
+{% block body %}
+    {% for message in app.flashes('notifications-error') %}
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle" style="font-size: 1.5rem;"></i> Error!</h4>
+            <p>{{ message }}</p>
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('notifications-success') %}
+        <div class="alert alert-success" role="alert">
+            <h4 class="alert-heading"><i class="fas fa-check-circle" style="font-size: 1.5rem;"></i> Success!</h4>
+            <p>{{ message }}</p>
+        </div>
+    {% endfor %}
+
+    {% for notification in notifications %}
+        <div class="post-preview">
+            <a href="{{ notification["link"] }}" target="_blank">{{ notification["content"]|raw }}</a> 
+            <p class="post-meta">{{ notification["createdDate"] }}</p>
+        </div>
+        <hr>
+    {% else %}
+        <div class="alert alert-warning" role="alert">
+            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle" style="font-size: 1.5rem;"></i> Oops!</h4>
+            <p>You do not have any new notifications</p>
+        </div>
+    {% endfor %}
+
+    <div class="clearfix">
+        {% if page > 1 %}
+            {% set previousPage = page - 1 %}
+            <a class="btn btn-primary float-left" href="{{ path("home", {"page": previousPage}) }}">Newer Notifications &larr;</a>
+        {% endif %}
+
+        {% if page < pages and pages > 1 %}
+            {% set nextPage = page + 1 %}
+            <a class="btn btn-primary float-right" href="{{ path("home", {"page": nextPage}) }}">Older Notifications &rarr;</a>
+        {% endif %}
+    </div>
+{% endblock %}

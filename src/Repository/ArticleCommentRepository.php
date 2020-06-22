@@ -2,9 +2,11 @@
 
 namespace App\Repository;
 
+use App\Entity\Article;
 use App\Entity\ArticleComment;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @method ArticleComment|null find($id, $lockMode = null, $lockVersion = null)
@@ -19,32 +21,63 @@ class ArticleCommentRepository extends ServiceEntityRepository
         parent::__construct($registry, ArticleComment::class);
     }
 
-    // /**
-    //  * @return ArticleComment[] Returns an array of ArticleComment objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('a.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?ArticleComment
-    {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+
+
+
+    /**
+     * Fetch Article Comments
+     *
+     * Fetches article comments by the passed values
+     *
+     * @param int Records per page
+     * @param int Page number
+     * @param Article Article to fetch comments from
+     *
+     * @return ArticleComment[] Array of fetched articles
+     */
+    public function fetchArticleComments(
+        int $recordsPerPage,
+        int $pageNumber = 1,
+        Article $article
+    ): array {
+        $pageNumber -= 1;
+
+        $query = $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('a')
+            ->from(ArticleComment::class, 'a')
+            ->where("a.article = :article")
+            ->setParameter("article", $article);
+
+        $counterQuery = $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('COUNT(a)')
+            ->from(ArticleComment::class, 'a')
+            ->where("a.article = :article")
+            ->setParameter("article", $article);
+        
+        $query->addOrderBy('a.createdDate', "DESC");
+
+        if(null !== $pageNumber && is_int($pageNumber)) {
+            $recordsPerPage = (null === $recordsPerPage || !is_integer($recordsPerPage)) ? false : $recordsPerPage;
+
+            $query->setFirstResult($recordsPerPage * $pageNumber);
+
+            if($recordsPerPage) {
+                $query->setMaxResults($recordsPerPage);
+            }
+        }
+
+        $finishedQuery = $query->getQuery();
+
+        $paginator = new Paginator($finishedQuery);
+
+        $totalMatched = $counterQuery->getQuery()->getSingleScalarResult();
+
+        return array(
+            'paginator' => $paginator,
+            'totalMatched' => (int) $totalMatched
+        );
     }
-    */
 }

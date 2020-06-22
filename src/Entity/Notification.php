@@ -35,7 +35,7 @@ class Notification
     private $type;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="string", nullable=true)
      */
     private $objectId;
 
@@ -48,6 +48,11 @@ class Notification
      * @ORM\Column(type="datetime")
      */
     private $createdDate;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $description;
 
     public function getId(): ?int
     {
@@ -90,12 +95,12 @@ class Notification
         return $this;
     }
 
-    public function getObjectId(): ?int
+    public function getObjectId(): ?string
     {
         return $this->objectId;
     }
 
-    public function setObjectId(?int $objectId): self
+    public function setObjectId(?string $objectId): self
     {
         $this->objectId = $objectId;
 
@@ -122,6 +127,18 @@ class Notification
     public function setCreatedDate(\DateTimeInterface $createdDate): self
     {
         $this->createdDate = $createdDate;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
 
         return $this;
     }

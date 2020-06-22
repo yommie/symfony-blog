@@ -22,7 +22,7 @@
                         {% if notificationCount > 0 %}
                             {% set badgeClass = "badge-danger" %}
                         {% endif %}
-                        <a class="nav-link nav-notification" href="#"><i class="fas fa-bell"></i> <span class="badge {{ badgeClass }}">{{ notificationCount }}</span></a>
+                        <a class="nav-link nav-notification" href="{{ path("notifications") }}"><i class="fas fa-bell"></i> <span class="badge {{ badgeClass }}">{{ notificationCount }}</span></a>
                     </li>
 
                     <li class="nav-item dropdown">

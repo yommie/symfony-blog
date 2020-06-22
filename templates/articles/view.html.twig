@@ -21,14 +21,44 @@
 
 {% block body %}
 
-    {% for message in app.flashes('create-article-error') %}
+    {% for message in app.flashes('view-article-error') %}
         <div class="alert alert-danger" role="alert">
             <h4 class="alert-heading"><i class="fas fa-exclamation-triangle" style="font-size: 1.5rem;"></i> Error!</h4>
             <p>{{ message }}</p>
         </div>
     {% endfor %}
 
-    <div id="contentRenderer">
-        {{ content|raw }}
-    </div>
+    {% if page is same as(1) %}
+        <div id="contentRenderer">
+            {{ content|raw }}
+        </div>
+    {% endif %}
+
+    {% if article.getIsCommentsAllowed() is same as(true) %}
+        <h3 class="mb-4">Comments: {{ commentsCount }}</h3>
+
+        {% if app.user %}
+            <a class="btn btn-info" href="{{ path("createArticleComment", {"slug": article.getSlug()}) }}">Create Comment</a>
+        {% endif %}
+
+        {% for comment in comments %}
+            <div class="post-preview">
+                <div>{{ comment["comment"]|raw }}</div>
+                <p class="post-meta"><a href="{{ path("viewAuthor", {"username": comment["author"]}) }}">{{ comment["author"] }}</a> - {{ comment["createdDate"] }}</p>
+            </div>
+            <hr>
+        {% endfor %}
+
+        <div class="clearfix">
+            {% if page > 1 %}
+                {% set previousPage = page - 1 %}
+                <a class="btn btn-primary float-left" href="{{ path("viewArticle", {"slug": article.getSlug(),"page": previousPage}) }}">Newer Comments &larr;</a>
+            {% endif %}
+
+            {% if page < pages and pages > 1 %}
+                {% set nextPage = page + 1 %}
+                <a class="btn btn-primary float-right" href="{{ path("viewArticle", {"slug": article.getSlug(),"page": nextPage}) }}">Older Comments &rarr;</a>
+            {% endif %}
+        </div>
+    {% endif %}
 {% endblock %}
