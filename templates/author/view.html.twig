@@ -53,7 +53,7 @@
                         {% endif %}
                     {% endif %}
 
-                    {% if is_granted("CAN_BAN_USER", app.user) %}
+                    {% if is_granted("CAN_BAN_USER", author) %}
                         {% if author.getIsBanned() %}
                             <a class="btn btn-danger" href="{{ path("adminUnbanUser", {"username": author.getUsername()}) }}">Unban</a>
                         {% else %}
@@ -61,7 +61,7 @@
                         {% endif %}
                     {% endif %}
 
-                    {% if is_granted("ROLE_SUPER_ADMIN") %}
+                    {% if is_granted("CAN_SET_PERMISSIONS", author) %}
                         <a class="btn btn-info" href="{{ path("adminPermissions", {"username": author.getUsername()}) }}">Permissions</a>
                     {% endif %}
                 {% endif %}

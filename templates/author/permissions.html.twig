@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ author.getUsername() }}{% endblock %}
+
+{% block masthead %}
+    {% import("sections/site/header/masthead.html.twig") as masthead %}
+    {{ masthead.masthead(author.getUsername() ~ "'s profile", null, asset("img/create-article-bg.jpg")) }}
+{% endblock %}
+
+{% block body %}
+    {% for message in app.flashes('permissions-error') %}
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle" style="font-size: 1.5rem;"></i> Error!</h4>
+            <p>{{ message }}</p>
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('permissions-success') %}
+        <div class="alert alert-success" role="alert">
+            <h4 class="alert-heading"><i class="fas fa-check-circle" style="font-size: 1.5rem;"></i> Success!</h4>
+            <p>{{ message }}</p>
+        </div>
+    {% endfor %}
+
+    <div class="row">
+        <div class="col text-center">
+            {% if app.user %}
+                {% if subscriptionRepository.isSubscribed(app.user, author) is same as(false) %}
+                    <a class="btn btn-success" href="{{ path("subscribeAuthor", {"username": author.getUsername()}) }}">Subscribe</a>
+                {% else %}
+                    <a class="btn btn-warning" href="{{ path("unsubscribeAuthor", {"username": author.getUsername()}) }}">Unsubscribe</a>
+                {% endif %}
+
+                {% if is_granted("ROLE_SUPER_ADMIN") %}
+                    {% if author.isGranted("ROLE_ADMIN") %}
+                        <a class="btn btn-danger" href="{{ path("adminRemoveAdmin", {"username": author.getUsername()}) }}">Remove as Admin</a>
+                    {% else %}
+                        <a class="btn btn-dark" href="{{ path("adminMakeAdmin", {"username": author.getUsername()}) }}">Make Admin</a>
+                    {% endif %}
+                {% endif %}
+
+                {% if is_granted("CAN_BAN_USER", author) %}
+                    {% if author.getIsBanned() %}
+                        <a class="btn btn-danger" href="{{ path("adminUnbanUser", {"username": author.getUsername()}) }}">Unban</a>
+                    {% else %}
+                        <a class="btn btn-light" href="{{ path("adminBanUser", {"username": author.getUsername()}) }}">Ban</a>
+                    {% endif %}
+                {% endif %}
+
+                {% if is_granted("CAN_SET_PERMISSIONS", author) %}
+                    <a class="btn btn-info" href="{{ path("adminPermissions", {"username": author.getUsername()}) }}">Permissions</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    {{ form_start(permissionsForm) }}
+        <div class="control-group">
+            <div class="form-group pb-2">
+                {{ form_label(permissionsForm.permissions) }}
+                {{ form_widget(permissionsForm.permissions, {'attr': {'class': 'custom-select', 'size': '6'}}) }}
+            </div>
+        </div>
+        <br>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Update Permissions</button>
+        </div>
+    {{ form_end(permissionsForm) }}
+{% endblock %}

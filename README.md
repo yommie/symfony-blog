@@ -11,9 +11,6 @@ A simple blog built with symfony
 - Admin Section
 - Super admin promite users to admin
 
-## Todo
-- Set User Permissions Page
-
 ## Getting Started
 - Clone this repository
 - Install dependencies using composer

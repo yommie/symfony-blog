@@ -11,8 +11,9 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 class UserVoter extends Voter
 {
     private const BAN_USER = "CAN_BAN_USER";
+    private const SET_PERMISSIONS = "CAN_SET_PERMISSIONS";
 
-    private const SUPPORTED = [self::BAN_USER];
+    private const SUPPORTED = [self::BAN_USER, self::SET_PERMISSIONS];
 
     private $security;
 
@@ -28,23 +29,35 @@ class UserVoter extends Voter
 
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
     {
+        $user = $token->getUser();
+        
+        if(!$user instanceof UserInterface) {
+            return false;
+        }
+
         switch($attribute) {
             case self::BAN_USER:
-                return $this->canBanUser($subject);
+                return $this->canBanUser($subject, $user);
+            case self::SET_PERMISSIONS:
+                return $this->canSetPermissions($subject, $user);
         }
 
         return false;
     }
 
-    private function canBanUser(User $user) {
-        if(!$this->security->isGranted("ROLE_ADMIN")) {
+    private function canBanUser(User $user, User $admin) {
+        if(!$this->security->isGranted("ROLE_ADMIN") || $user->isGranted("ROLE_SUPER_ADMIN")) {
             return false;
         }
 
-        if(!$this->security->isGranted("ROLE_SUPER_ADMIN") && $user->isGranted("ROLE_ADMIN")) {
+        return $this->security->isGranted("ROLE_SUPER_ADMIN") || in_array(self::BAN_USER, $admin->getPermissions());
+    }
+
+    private function canSetPermissions(User $user, User $admin) {
+        if(!$this->security->isGranted("ROLE_ADMIN") || $user->isGranted("ROLE_SUPER_ADMIN")) {
             return false;
         }
 
-        return $this->security->isGranted("ROLE_SUPER_ADMIN") || in_array(self::BAN_USER, $user->getPermissions());
+        return $this->security->isGranted("ROLE_SUPER_ADMIN") || in_array(self::SET_PERMISSIONS, $admin->getPermissions());
     }
 }
