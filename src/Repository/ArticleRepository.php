@@ -112,7 +112,9 @@ class ArticleRepository extends ServiceEntityRepository
                 ->setParameter('isBanned', false);
         }
         
-        $query->addOrderBy('a.createdDate', "DESC");
+        $query
+            ->addOrderBy('a.createdDate', "DESC")
+            ->addOrderBy('a.id', 'DESC');
 
         if(null !== $pageNumber && is_int($pageNumber)) {
             $recordsPerPage = (null === $recordsPerPage || !is_integer($recordsPerPage)) ? false : $recordsPerPage;

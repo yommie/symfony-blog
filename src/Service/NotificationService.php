@@ -6,7 +6,6 @@ use App\Entity\User;
 use App\Entity\Notification;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class NotificationService {
 

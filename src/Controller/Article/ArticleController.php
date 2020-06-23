@@ -97,7 +97,7 @@ class ArticleController extends AbstractController
         try {
             $content = (new \DBlackborough\Quill\Render($article->getContent()))->render();
         } catch(\Exception $e) {
-            $this->addFlash("view-error", $e->getMessage());
+            $this->addFlash("view-article-error", $e->getMessage());
         }
 
         $formattedComments = [];

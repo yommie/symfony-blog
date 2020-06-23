@@ -6,7 +6,6 @@ use App\Service\UserService;
 use App\Repository\UserRepository;
 use App\Service\NotificationService;
 use App\Repository\SubscriptionRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
